@@ -1,8 +1,12 @@
 from pathlib import Path
 import pandas as pd
+import schedule
+import time
 
 
 class DownloadCleaner:
+
+    """Cleans my messy download folder"""
 
     today = pd.Timestamp("today").strftime("_%Y_%m_%d")
 
@@ -17,6 +21,10 @@ class DownloadCleaner:
         }
 
     def move_and_create_files(self):
+
+        """Takes a pathlib object and iterate over it move files.
+        if file exists then it will add the current date_time to handle duplicate names.
+        the folder structure will be Year (YYYY) -- > Month (January) --> Extension (.zip) -->"""
         # move files to folders.
 
         for name, time in self.download_dict.items():
@@ -38,6 +46,7 @@ class DownloadCleaner:
                 name.rename(new_path)
 
     def create_log_file(self):
+        """Creates a simple log file based on the Pathlib object."""
 
         df = pd.DataFrame(
             {
@@ -83,8 +92,17 @@ class DownloadCleaner:
             )
 
 
-download = DownloadCleaner("downloads")
+def do_job():
+    print("Running download cleaner...")
 
-download.create_log_file()
+    download = DownloadCleaner("downloads")
+    download.create_log_file()
+    download.move_and_create_files()
 
-download.move_and_create_files()
+
+schedule.every().hour.do(do_job)
+
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
