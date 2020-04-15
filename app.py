@@ -1,6 +1,5 @@
 from pathlib import Path
 import pandas as pd
-import schedule
 import time
 
 
@@ -92,17 +91,7 @@ class DownloadCleaner:
             )
 
 
-def do_job():
-    print("Running download cleaner...")
+download = DownloadCleaner("downloads")
+download.create_log_file()
+download.move_and_create_files()
 
-    download = DownloadCleaner("downloads")
-    download.create_log_file()
-    download.move_and_create_files()
-
-
-schedule.every().hour.do(do_job)
-
-
-while True:
-    schedule.run_pending()
-    time.sleep(1)
